@@ -3,12 +3,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import DataRequired
 from flask import redirect, render_template
-import users_db
+from users_db import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'twit_twit'
-db = users_db.DB()
-users_db.UsersModel(db.get_connection()).init_table()
+User.create_table()
 
 class LoginForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired()])
@@ -23,7 +22,7 @@ class RegisterForm(FlaskForm):
     photo = FileField('Выберите аватар')
     submit = SubmitField('Создать пользователя')
 
-
+@app.route("/")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -37,15 +36,24 @@ def register():
     form = RegisterForm()
     exists = False
     diff_pass = False
+    username = form.data['username']
+    password = form.data['password']
+    rep_password = form.data['rep_password']
     if form.validate_on_submit():
-        user_db = users_db.UsersModel(db.get_connection())
-        if not user_db.exists(form.data['username']) and form.data['password'] == form.data['rep_password']:
-            return redirect('/success_register')
-        elif db.exists(form['username']):
-            exists = True
-        elif form.data['password'] != form.data['rep_password']:
+        if User.select().where(User.username == username):
             diff_pass = True
+        if diff_pass:
+            exists = True
+        elif password != rep_password:
+            diff_pass = True
+        else:
+            user = User.create(username=username, password=password)
+            return redirect("/success_register")
     return render_template('register.html', title='Регистрация', form=form, exists=exists, diff_pass=diff_pass)
+
+@app.route('/success_register')
+def success_register():
+    return render_template('success_register.html')
 
 
 if __name__ == '__main__':
