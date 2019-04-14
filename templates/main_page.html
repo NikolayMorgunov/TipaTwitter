@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table width="100%">
+    <tr>
+        <td>
+            <h1>
+                Общая страница
+            </h1>
+        </td>
+        <td>
+            {{current_username}}
+        </td>
+    </tr>
+</table>
+<a href="/my_page"> Моя страница</a>
+{% for i in news%}
+<h2>{{ i.title}}</h2>
+<h6> {{i.username}}</h6>
+<h5>{{ i.text}}</h5>
+{%endfor%}
+{% endblock %}

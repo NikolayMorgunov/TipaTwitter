@@ -41,15 +41,6 @@
     </div>
     {% endfor %}
     </p>
-    <p>
-        {{ form.photo.label }}<br>
-        {{ form.photo }}<br>
-        {% for error in form.photo.errors %}
-    <div class="alert alert-danger" role="alert">
-        {{ error }}
-    </div>
-    {% endfor %}
-    </p>
     <p>{{ form.submit() }}</p>
     <a href="/login">Войти</a>
 </form>

@@ -1,33 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Вход</h1>
+<h1>Создание новости</h1>
 <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
-    <p>
-        {%if not normal_auth%}
+    {%if not norm_create%}
     <div class="alert alert-danger" role="alert">
-        Неправильный логин или пароль
+        Такой заголовок уже существует
     </div>
     {%endif%}
-    {{ form.username.label }}<br>
-    {{ form.username }}<br>
-    {% for error in form.password.errors %}
+    <p>
+        {{ form.title.label }}<br>
+        {{ form.title }}<br>
+        {% for error in form.title.errors %}
     <div class="alert alert-danger" role="alert">
         {{ error }}
     </div>
     {% endfor %}
     </p>
     <p>
-        {{ form.password.label }}<br>
-        {{ form.password }}<br>
-        {% for error in form.password.errors %}
+        {{ form.text.label }}<br>
+        {{ form.text }}<br>
+        {% for error in form.text.errors %}
     <div class="alert alert-danger" role="alert">
         {{ error }}
     </div>
     {% endfor %}
     </p>
     <p>{{ form.submit() }}</p>
-    <a href="/register">Зарегестрироваться</a>
 </form>
 {% endblock %}

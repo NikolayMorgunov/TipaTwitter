@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table width="100%">
+    <tr>
+        <td>
+            <h1>
+                Моя страница
+            </h1>
+        </td>
+        <td>
+            {{current_username}}
+        </td>
+        <td>
+            <a href="/logout">Выйти</a>
+        </td>
+    </tr>
+</table>
+<a href="/main_page">Общая страница</a>
+<a href="/create_news">Создать новость</a>
+{% for i in news%}
+    <h2> {{i.title}}</h2>
+    <h6> {{i.username}}</h6>
+    <h5> {{i.text}}</h5>
+    <a href="/delete_news/{{i.title}}">Удалить новость</a>
+{%endfor%}
+{% endblock %}
