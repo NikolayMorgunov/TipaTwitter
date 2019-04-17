@@ -7,14 +7,12 @@ from users_db import *
 from news_db import *
 from auth_check import *
 from news_create_check import *
+from flask import session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'twit_twit'
 User.create_table()
 News.create_table()
-
-session_is_on = False
-current_username = ''
 
 
 class LoginForm(FlaskForm):
@@ -39,18 +37,15 @@ class NewsCreateForm(FlaskForm):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global session_is_on
-    global current_username
-    if session_is_on:
-        return redirect('main_page')
+    if 'username' in session:
+        return redirect('/main_page')
     form = LoginForm()
     username = form.data['username']
     password = form.data['password']
     normal_auth = True
     if form.validate_on_submit():
         if auth_check(username, password):
-            session_is_on = True
-            current_username = username
+            session['username'] = username
             return redirect('/main_page')
         else:
             normal_auth = False
@@ -85,41 +80,35 @@ def success_register():
 
 @app.route('/main_page', methods=['GET', 'POST'])
 def main_page():
-    global current_username
-    global session_is_on
-    if session_is_on:
-        return render_template('main_page.html', title='Главная страница', current_username=current_username,
+    if 'username' in session:
+        return render_template('main_page.html', title='Главная страница', current_username=session['username'],
                                news=News.select())
     return redirect('/login')
 
 
 @app.route('/my_page', methods=['GET', 'POST'])
 def my_page():
-    global current_username
-    global session_is_on
-    if session_is_on:
-        return render_template('my_page.html', title='Моя страница', current_username=current_username,
-                               news=News.select().where(News.username == current_username))
+    if 'username' in session:
+        return render_template('my_page.html', title='Моя страница', current_username=session['username'],
+                               news=News.select().where(News.username == session['username']))
     return redirect('/login')
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def log_out():
-    global session_is_on
-    session_is_on = False
+    session.pop('username', 0)
     return redirect('/login')
 
 
 @app.route('/create_news', methods=['GET', 'POST'])
 def create_news():
-    global current_username
     form = NewsCreateForm()
     title = form.data['title']
     text = form.data['text']
     norm_create = True
     if form.validate_on_submit():
         if news_create_check(title):
-            news = News.create(title=title, text=text, username=current_username)
+            news = News.create(title=title, text=text, username=session['username'])
             return redirect('/my_page')
         else:
             norm_create = False
