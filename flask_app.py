@@ -11,8 +11,8 @@ from flask import session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'twit_twit'
-User.create_table()
-News.create_table()
+#User.create_table()
+#News.create_table()
 
 
 class LoginForm(FlaskForm):
